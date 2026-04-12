@@ -26,7 +26,8 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->required(),
                 Forms\Components\TextInput::make('email')->email()->required(),
-                Forms\Components\TextInput::make('role')->required()->in(['admin', 'user']),
+                Forms\Components\TextInput::make('password')->password(),
+                Forms\Components\TextInput::make('role')->required(),
 
                 Forms\Components\FileUpload::make('image')
                     ->image()
