@@ -11,6 +11,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CommentResource extends Resource
@@ -66,5 +68,28 @@ class CommentResource extends Resource
             'create' => Pages\CreateComment::route('/create'),
             'edit' => Pages\EditComment::route('/{record}/edit'),
         ];
+    }
+     public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->can('view post');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('view post');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('create post');
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('edit post');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->can('delete post');
     }
 }

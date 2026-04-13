@@ -13,6 +13,8 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
+
 
 class UserResource extends Resource
 {
@@ -25,7 +27,7 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')->required(),
-                Forms\Components\TextInput::make('email')->email()->required(),
+                Forms\Components\TextInput::make('email')->email()->required()->unique(ignoreRecord: true),
                 Forms\Components\TextInput::make('password')->password(),
                 Forms\Components\TextInput::make('role')->required(),
 
@@ -33,6 +35,11 @@ class UserResource extends Resource
                     ->image()
                     ->disk('public')
                     ->directory('users'),
+
+                Forms\Components\Select::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
             ]);
     }
 
@@ -74,5 +81,28 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+     public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->can('view post');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('view post');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('create post');
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('edit post');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->can('delete post');
     }
 }

@@ -10,11 +10,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasAvatar
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable , SoftDeletes;
+    use HasRoles;
+
+    protected $guard_name = 'web';
 
     /**
      * The attributes that are mass assignable.
@@ -52,10 +56,6 @@ class User extends Authenticatable implements HasAvatar
         ];
     }
 
-        public function canAccessPanel(): bool
-    {
-        return $this->role === 'admin';
-    }
     public function posts() {
     return $this->hasMany(Post::class);
 }

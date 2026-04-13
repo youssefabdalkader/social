@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -46,7 +47,7 @@ class PostResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->visible(fn (Post $record) => auth()->user()->can('delete post')),
                 ]),
             ]);
     }
@@ -65,5 +66,29 @@ class PostResource extends Resource
             'create' => Pages\CreatePost::route('/create'),
             'edit' => Pages\EditPost::route('/{record}/edit'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->can('view post');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('view post');
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('create post');
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('edit post');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->can('delete post');
     }
 }
