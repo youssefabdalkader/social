@@ -71,4 +71,24 @@ public function getFilamentAvatarUrl(): string
     // fallback default avatar
     return 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
 }
+
+public function totalComments()
+{
+    return \App\Models\Comment::whereIn('post_id', $this->posts()->pluck('id'))->count();
+}
+
+public function totalLikes()
+{
+    return \App\Models\Like::whereIn('post_id', $this->posts()->pluck('id'))->count();
+}
+
+public function MytotalLikes()
+{
+    return \App\Models\Like::where('user_id', $this->id)->count();
+}
+
+public function MytotalComments()
+{
+    return \App\Models\Comment::where('user_id', $this->id)->count();
+}
 }

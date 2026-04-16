@@ -29,7 +29,6 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('name')->required(),
                 Forms\Components\TextInput::make('email')->email()->required()->unique(ignoreRecord: true),
                 Forms\Components\TextInput::make('password')->password(),
-                Forms\Components\TextInput::make('role')->required(),
 
                 Forms\Components\FileUpload::make('image')
                     ->image()
@@ -49,7 +48,10 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('role'),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Role')
+                    ->badge()
+                    ->color('success'),
                 ImageColumn::make('image')->disk('public'),
                 Tables\Columns\TextColumn::make('created_at')->dateTime(),
                 Tables\Columns\TextColumn::make('updated_at')->dateTime(),
@@ -59,6 +61,8 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -82,7 +86,7 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
-     public static function shouldRegisterNavigation(): bool
+    public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->can('view post');
     }
@@ -91,6 +95,12 @@ class UserResource extends Resource
     {
         return auth()->user()->can('view post');
     }
+    public static function canView(Model $record): bool
+    {
+        return auth()->user()->can('view post');
+    }
+
+
 
     public static function canCreate(): bool
     {
@@ -102,6 +112,11 @@ class UserResource extends Resource
     }
 
     public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->can('delete post');
+    }
+
+    public static function canDeleteAny(): bool
     {
         return auth()->user()->can('delete post');
     }

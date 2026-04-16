@@ -17,29 +17,48 @@ class PostController extends Controller
         return view('posts.index', compact('posts'));
     }
 
-    public function store(Request $request)
-    {
-        Post::create([
-            'user_id' => auth()->id(),
-            'content' => $request->content,
-        ]);
+public function store(Request $request)
+{
+    $path = null;
 
-        return back();
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('posts', 'public');
     }
+
+    Post::create([
+        'user_id' => auth()->id(),
+        'content' => $request->content,
+        'image' => $path,
+    ]);
+
+
+
+
+
+
+    return back();
+}
     public function edit($id)
     {
         $post = Post::findOrFail($id);
         return view('posts.edit', compact('post'));
     }
     public function update(Request $request, $id)
-    {
-        $post = Post::findOrFail($id);
-        $post->update([
-            'content' => $request->content,
-        ]);
+{
+    $post = Post::findOrFail($id);
 
-        return redirect()->route('posts.index');
+    $data = [
+        'content' => $request->content,
+    ];
+
+    if ($request->hasFile('image')) {
+        $data['image'] = $request->file('image')->store('posts', 'public');
     }
+
+    $post->update($data);
+
+    return redirect()->route('posts.index');
+}
 
     public function destroy($id)
     {

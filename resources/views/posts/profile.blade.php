@@ -2,24 +2,25 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Social App</title>
+<title>My Posts</title>
 <script src="https://cdn.tailwindcss.com"></script>
+
 <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gradient-to-b from-blue-50 via-white to-blue-100 text-gray-800">
 
 <!-- NAV -->
-<div class="bg-white fixed top-0 w-full z-50 shadow-sm">
-    <div class="max-w-7xl mx-auto flex justify-between items-center p-3">
+<div class="bg-white fixed top-0 w-full z-50 border-b shadow-sm">
+    <div class="max-w-6xl mx-auto flex justify-between items-center p-3">
 
-        <h1 class="font-bold text-blue-500 text-lg">SocialApp</h1>
+        <h1 class="font-bold text-blue-600">SocialApp</h1>
 
         <div class="flex items-center gap-3">
             <img src="{{ auth()->user()->image ? asset('storage/'.auth()->user()->image) : 'https://ui-avatars.com/api/?name='.auth()->user()->name }}"
-                 class="w-9 h-9 rounded-full border">
+                 class="w-9 h-9 rounded-full">
 
-            <span class="text-sm font-medium">{{ auth()->user()->name }}</span>
+            <span>{{ auth()->user()->name }}</span>
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -30,9 +31,9 @@
     </div>
 </div>
 
-<div class="max-w-7xl mx-auto flex gap-5 pt-20 px-4">
+<div class="max-w-6xl mx-auto flex gap-5 pt-20 px-4">
 
-<!-- LEFT SIDEBAR -->
+<!-- PROFILE -->
 <!-- SIDEBAR -->
 <div class="w-1/4 space-y-4">
 
@@ -79,95 +80,80 @@
     </div>
 
 </div>
-
 <!-- FEED -->
 <div class="w-2/4">
 
-<!-- CREATE -->
-<div class="bg-white p-4 rounded-xl shadow-sm mb-5">
-    <form method="POST" action="{{ route('posts.store') }}" enctype="multipart/form-data">
-        @csrf
-
-        <textarea name="content"
-            class="w-full border p-2 rounded text-sm"
-            placeholder="Share something..."></textarea>
-
-        <div class="flex justify-between items-center mt-2">
-            <input type="file" name="image" class="text-xs">
-            <button class="bg-blue-500 text-white px-4 py-1 rounded text-sm">
-                Post
-            </button>
-        </div>
-    </form>
-</div>
+<h2 class="font-bold text-lg mb-4">My Posts</h2>
 
 <!-- POSTS -->
-@foreach($posts as $post)
+@if(auth()->user()->posts->count() == 0)
+    <p class="text-gray-500">You have not created any posts yet.</p>
+@endif
+@foreach(auth()->user()->posts as $post)
 
 @php
     $liked = $post->likes->where('user_id', auth()->id())->count() > 0;
 @endphp
 
-<div id="post-{{ $post->id }}" class="bg-white rounded-xl shadow-sm mb-5 p-4">
+<div id="post-{{ $post->id }}" class="bg-white border p-4 rounded-xl shadow mb-5">
 
     <!-- USER -->
     <div class="flex justify-between items-center">
 
         <div class="flex items-center gap-2">
-            <img src="{{ $post->user->image ? asset('storage/'.$post->user->image) : 'https://ui-avatars.com/api/?name='.$post->user->name }}"
+            <img src="{{ auth()->user()->image ? asset('storage/'.auth()->user()->image) : 'https://ui-avatars.com/api/?name='.auth()->user()->name }}"
                  class="w-8 h-8 rounded-full">
 
-            <div>
-                <p class="text-sm font-semibold">{{ $post->user->name }}</p>
-                <span class="text-xs text-gray-400">
-                    {{ $post->created_at->diffForHumans() }}
-                </span>
-            </div>
+            <b>{{ auth()->user()->name }}</b>
         </div>
 
-        @if($post->user_id == auth()->id())
-        <div class="text-xs flex gap-2">
+        <div class="flex gap-2 text-xs">
             <a href="{{ route('posts.edit',$post->id) }}" class="text-yellow-500">Edit</a>
+
             <form method="POST" action="{{ route('posts.destroy',$post->id) }}">
                 @csrf
                 @method('DELETE')
                 <button class="text-red-500">Delete</button>
             </form>
         </div>
-        @endif
 
     </div>
 
+    <span class="text-gray-400 text-sm">
+        {{ $post->created_at->diffForHumans() }}
+    </span>
+
     <!-- CONTENT -->
-    <p class="mt-3 text-sm">{{ $post->content }}</p>
+    <p class="mt-3">{{ $post->content }}</p>
 
     @if($post->image)
         <img src="{{ asset('storage/'.$post->image) }}"
-             class="mt-3 rounded-lg max-h-80 mx-auto">
+             class="mt-3 rounded max-h-96 mx-auto">
     @endif
 
     <!-- COUNTS -->
-    <div class="flex justify-between text-xs text-gray-500 mt-3">
+    <div class="text-sm text-gray-500 mt-2 flex gap-3">
         <span>❤️ {{ $post->likes->count() }}</span>
         <span>💬 {{ $post->comments->count() }}</span>
     </div>
 
     <!-- ACTIONS -->
-    <div class="flex gap-6 mt-3 text-sm border-t pt-2">
+    <div class="flex gap-4 mt-2 text-sm">
 
         <form method="POST" action="{{ route('posts.like',$post->id) }}#post-{{ $post->id }}">
             @csrf
-            <button class="{{ $liked ? 'text-red-500 font-bold' : 'text-gray-600' }}">
-                👍 Like
+            <button type="submit"
+                class="{{ $liked ? 'text-red-500 font-bold' : 'text-blue-500' }}">
+                Like
             </button>
         </form>
 
         <button onclick="toggleLikes({{ $post->id }})" class="text-gray-600">
-            👀 Likes
+            Who liked
         </button>
 
         <button onclick="toggleComments({{ $post->id }})" class="text-gray-600">
-            💬 Comment
+            Comments
         </button>
 
     </div>
@@ -175,7 +161,7 @@
     <!-- LIKES -->
     <div id="likes-box-{{ $post->id }}" class="hidden mt-2 text-xs text-gray-600">
         @foreach($post->likes as $like)
-            <div>❤️{{ $like->user->name }}</div>
+            <div>❤️ {{ $like->user->name }}</div>
         @endforeach
     </div>
 
@@ -183,18 +169,18 @@
     <div id="comments-{{ $post->id }}" class="hidden mt-3">
 
         @foreach($post->comments as $comment)
-            <div class="bg-gray-100 p-2 rounded mb-1 text-sm">
+            <div class="bg-blue-50 border p-2 rounded mb-1">
                 <b>{{ $comment->user->name }}</b>: {{ $comment->content }}
             </div>
         @endforeach
 
-        <form method="POST" action="{{ route('comments.store',$post->id) }}#post-{{ $post->id }}">
+        <form method="POST" action="{{ route('comments.store',$post->id) }}">
             @csrf
             <input name="content"
-                   class="w-full border p-2 rounded mt-2 text-sm"
+                   class="w-full border p-2 rounded mt-2"
                    placeholder="Write comment...">
 
-            <button class="bg-blue-500 text-white px-3 py-1 mt-2 rounded text-sm">
+            <button class="bg-blue-500 text-white px-3 py-1 mt-2 rounded">
                 Send
             </button>
         </form>
@@ -206,20 +192,17 @@
 
 </div>
 
-<!-- RIGHT SIDEBAR -->
-<div class="w-1/4 space-y-4">
+<!-- RIGHT -->
+<div class="w-1/4">
 
-    <div class="bg-white p-4 rounded-xl shadow-sm">
-        <h3 class="font-semibold text-sm mb-2">role</h3>
-        <p class="text-xs text-gray-500">    {{ auth()->user()->getRoleNames()->first() }}
-</p>
-    </div>
+    <div class="bg-white border p-4 rounded-xl shadow">
 
-    <div class="bg-white p-4 rounded-xl shadow-sm">
-        <h3 class="font-semibold text-sm mb-2">Stats about you</h3>
-        <p class="text-xs">Posts: {{ auth()->user()->posts()->count() }}</p>
-        <p class="text-xs">Likes: {{ auth()->user()->MytotalLikes() }}</p>
-        <p class="text-xs">Comments: {{ auth()->user()->MytotalComments() }}</p>
+        <h2 class="font-bold mb-3">My Stats 👋</h2>
+
+        <p>📝 Posts: {{ auth()->user()->posts()->count() }}</p>
+        <p>❤️ Likes: {{ auth()->user()->totalLikes() }}</p>
+        <p>💬 Comments: {{ auth()->user()->totalComments() }}</p>
+
     </div>
 
 </div>
@@ -233,21 +216,6 @@ function toggleLikes(id){
 
 function toggleComments(id){
     document.getElementById(`comments-${id}`).classList.toggle('hidden');
-
-}
-window.onload = function () {
-
-    if (window.location.hash) {
-
-        let id = window.location.hash.replace('#post-', '');
-
-        let commentsBox = document.getElementById('comments-' + id);
-
-        if (commentsBox) {
-            commentsBox.classList.remove('hidden');
-        }
-    }
-
 }
 </script>
 

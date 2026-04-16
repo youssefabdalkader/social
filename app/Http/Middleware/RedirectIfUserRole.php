@@ -10,9 +10,9 @@ class RedirectIfUserRole
     public function handle(Request $request, Closure $next)
     {
 
-        // if (!auth()->user()->hasRole('admin')) {
-        //     return redirect('/');
-        // }
+        if (auth()->user()->hasRole('User') && auth()->user()->roles->count() === 1) {
+            return redirect('/');
+        }
 
         return $next($request);
     }

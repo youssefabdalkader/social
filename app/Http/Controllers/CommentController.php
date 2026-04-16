@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 
+use function Symfony\Component\String\b;
+
 class CommentController extends Controller
 {
     public function store(Request $request, $postId)
@@ -15,8 +17,8 @@ class CommentController extends Controller
             'content' => $request->content
         ]);
 
-        return back();
-    }
+
+        return back();}
 
     public function edit($id)
     {

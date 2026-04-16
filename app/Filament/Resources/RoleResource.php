@@ -12,6 +12,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Model;
+
 
 class RoleResource extends Resource
 {
@@ -37,13 +39,22 @@ class RoleResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('id')->sortable(),
+                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('permissions.name')
+                    ->label('Permissions')
+                    ->badge()
+                    ->color('success'),
+                Tables\Columns\TextColumn::make('created_at')->dateTime(),
+                Tables\Columns\TextColumn::make('updated_at')->dateTime(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -67,4 +78,35 @@ class RoleResource extends Resource
             'edit' => Pages\EditRole::route('/{record}/edit'),
         ];
     }
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('view post');
+    }
+    public static function canView(Model $record): bool
+    {
+        return auth()->user()->can('view post');
+    }
+
+
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('create post');
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('edit post');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->can('delete post');
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()->can('delete post');
+    }
 }
+
+
