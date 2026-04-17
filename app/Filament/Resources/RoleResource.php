@@ -78,6 +78,7 @@ class RoleResource extends Resource
             'edit' => Pages\EditRole::route('/{record}/edit'),
         ];
     }
+<<<<<<< HEAD
    public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->can('view');
@@ -90,26 +91,55 @@ class RoleResource extends Resource
     public static function canView(Model $record): bool
     {
         return auth()->user()->can('view');
+=======
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('view post');
+    }
+    public static function canView(Model $record): bool
+    {
+        return auth()->user()->can('view post');
+>>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
     }
 
 
 
     public static function canCreate(): bool
     {
+<<<<<<< HEAD
         return auth()->user()->can('create');
     }
     public static function canEdit(Model $record): bool
     {
         return auth()->user()->can('edit');
+=======
+        return auth()->user()->can('create post');
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('edit post');
+>>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
     }
 
     public static function canDelete(Model $record): bool
     {
+<<<<<<< HEAD
         return auth()->user()->can('delete');
+=======
+        return auth()->user()->can('delete post');
+>>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
     }
 
     public static function canDeleteAny(): bool
     {
+<<<<<<< HEAD
         return auth()->user()->can('delete');
     }
 }
+=======
+        return auth()->user()->can('delete post');
+    }
+}
+
+
+>>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7

@@ -12,8 +12,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Spatie\Permission\Models\Permission;
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Model;
 
+=======
+>>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
 
 use function Laravel\Prompts\table;
 
@@ -67,6 +70,7 @@ class PermissionResource extends Resource
             'edit' => Pages\EditPermission::route('/{record}/edit'),
         ];
     }
+<<<<<<< HEAD
      public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->can('view');
@@ -101,4 +105,6 @@ class PermissionResource extends Resource
     {
         return auth()->user()->can('delete');
     }
+=======
+>>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
 }

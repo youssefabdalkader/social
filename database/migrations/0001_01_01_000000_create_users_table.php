@@ -16,6 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('image')->nullable();
+<<<<<<< HEAD
+=======
+            $table->string('role')->default('user');
+>>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
@@ -47,4 +51,8 @@ return new class extends Migration
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
