@@ -12,8 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 
 class UserResource extends Resource
@@ -28,7 +29,9 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->required(),
                 Forms\Components\TextInput::make('email')->email()->required()->unique(ignoreRecord: true),
-                Forms\Components\TextInput::make('password')->password(),
+                Forms\Components\TextInput::make('password')->password()->required(fn(string $operation) => $operation === 'create')
+                    ->dehydrated(fn($state) => filled($state))
+                    ->dehydrateStateUsing(fn($state) => Hash::make($state)),
 
                 Forms\Components\FileUpload::make('image')
                     ->image()
@@ -88,64 +91,36 @@ class UserResource extends Resource
     }
     public static function shouldRegisterNavigation(): bool
     {
-<<<<<<< HEAD
         return auth()->user()->can('view');
-=======
-        return auth()->user()->can('view post');
->>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
     }
 
     public static function canViewAny(): bool
     {
-<<<<<<< HEAD
         return auth()->user()->can('view');
     }
     public static function canView(Model $record): bool
     {
         return auth()->user()->can('view');
-=======
-        return auth()->user()->can('view post');
-    }
-    public static function canView(Model $record): bool
-    {
-        return auth()->user()->can('view post');
->>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
     }
 
 
 
     public static function canCreate(): bool
     {
-<<<<<<< HEAD
         return auth()->user()->can('create');
     }
     public static function canEdit(Model $record): bool
     {
         return auth()->user()->can('edit');
-=======
-        return auth()->user()->can('create post');
-    }
-    public static function canEdit(Model $record): bool
-    {
-        return auth()->user()->can('edit post');
->>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
     }
 
     public static function canDelete(Model $record): bool
     {
-<<<<<<< HEAD
         return auth()->user()->can('delete');
-=======
-        return auth()->user()->can('delete post');
->>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
     }
 
     public static function canDeleteAny(): bool
     {
-<<<<<<< HEAD
         return auth()->user()->can('delete');
-=======
-        return auth()->user()->can('delete post');
->>>>>>> d37dc6dce32e1b9ddcf9acdfd06c355d47b264f7
     }
 }
