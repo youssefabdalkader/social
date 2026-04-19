@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class RoleResource extends Resource
 {
+    protected static ?string $navigationGroup = 'Roles & Permissions';
+
     protected static ?string $model = Role::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -44,7 +46,16 @@ class RoleResource extends Resource
                 Tables\Columns\TextColumn::make('permissions.name')
                     ->label('Permissions')
                     ->badge()
-                    ->color('success'),
+                    ->color(function ($state) {
+
+                        return match ($state) {
+                            'view'   => 'gray',
+                            'create' => 'success',
+                            'edit'   => 'warning',
+                            'delete' => 'danger',
+                            default  => 'gray',
+                        };
+                    }),
                 Tables\Columns\TextColumn::make('created_at')->dateTime(),
                 Tables\Columns\TextColumn::make('updated_at')->dateTime(),
             ])
@@ -74,11 +85,10 @@ class RoleResource extends Resource
     {
         return [
             'index' => Pages\ListRoles::route('/'),
-            'create' => Pages\CreateRole::route('/create'),
             'edit' => Pages\EditRole::route('/{record}/edit'),
         ];
     }
-   public static function shouldRegisterNavigation(): bool
+    public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->can('view');
     }
@@ -96,7 +106,7 @@ class RoleResource extends Resource
 
     public static function canCreate(): bool
     {
-        return auth()->user()->can('create');
+        return auth()->user()->hasRole('hr');
     }
     public static function canEdit(Model $record): bool
     {

@@ -54,7 +54,16 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('roles.name')
                     ->label('Role')
                     ->badge()
-                    ->color('success'),
+                    ->color(function ($state) {
+
+                        return match ($state) {
+                            'admin'   => 'success',
+                            'super admin' => 'warning',
+                            'hr'   => 'info',
+                            'User' => 'danger',
+                            default  => 'gray',
+                        };
+                    }),
                 ImageColumn::make('image')->disk('public'),
                 Tables\Columns\TextColumn::make('created_at')->dateTime(),
                 Tables\Columns\TextColumn::make('updated_at')->dateTime(),
@@ -85,7 +94,6 @@ class UserResource extends Resource
     {
         return [
             'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }

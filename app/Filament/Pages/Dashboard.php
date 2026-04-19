@@ -2,27 +2,22 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\PostsChart;
-use App\Filament\Widgets\StatsOverview;
+use Filament\Actions\Action;
+use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Page;
 
-class Dashboard extends Page
+class Dashboard extends BaseDashboard
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static string $view = 'filament.pages.dashboard';
+    protected static ?string $navigationLabel = 'Home';
 
-    public function getHeaderWidgets(): array
+    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected function getHeaderActions(): array
     {
         return [
-            StatsOverview::class, // فوق
-        ];
-    }
-
-    public function getWidgets(): array
-    {
-        return [
-            PostsChart::class, // تحت
+            Action::make('back')
+                ->label('go to website')
+                ->url(route('posts.index'))
         ];
     }
 }

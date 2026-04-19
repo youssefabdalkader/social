@@ -9,13 +9,16 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PostResource extends Resource
 {
+    protected static ?string $navigationGroup = 'social';
+
     protected static ?string $model = Post::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -35,7 +38,13 @@ class PostResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')->label('Author'),
                 Tables\Columns\TextColumn::make('content'),
-                Tables\Columns\IconColumn::make('is_published')->boolean(),
+                SelectColumn::make('is_published')
+                    ->label('status')
+                    ->options([
+                        1 => 'published',
+                        0 => 'Draft',
+                    ])->rules(['required', 'in:1,0'])
+                    ->placeholder('Select an option')->default(fn($record) => $record?->is_published),
                 Tables\Columns\TextColumn::make('created_at')->dateTime(),
                 Tables\Columns\TextColumn::make('updated_at')->dateTime(),
             ])
@@ -47,7 +56,7 @@ class PostResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->visible(fn (Post $record) => auth()->user()->can('delete post')),
+                    Tables\Actions\DeleteBulkAction::make()->visible(fn(Post $record) => auth()->user()->can('delete post')),
                 ]),
             ]);
     }
@@ -63,12 +72,11 @@ class PostResource extends Resource
     {
         return [
             'index' => Pages\ListPosts::route('/'),
-            'create' => Pages\CreatePost::route('/create'),
             'edit' => Pages\EditPost::route('/{record}/edit'),
         ];
     }
 
- public static function shouldRegisterNavigation(): bool
+    public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->can('view');
     }

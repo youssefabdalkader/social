@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CommentResource extends Resource
 {
+    protected static ?string $navigationGroup = 'social';
     protected static ?string $model = Comment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -25,7 +26,7 @@ class CommentResource extends Resource
     {
         return $form
             ->schema([
-                    Forms\Components\Textarea::make('content')->required(),
+                Forms\Components\Textarea::make('content')->required(),
             ]);
     }
 
@@ -65,11 +66,10 @@ class CommentResource extends Resource
     {
         return [
             'index' => Pages\ListComments::route('/'),
-            'create' => Pages\CreateComment::route('/create'),
             'edit' => Pages\EditComment::route('/{record}/edit'),
         ];
     }
-      public static function shouldRegisterNavigation(): bool
+    public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->can('view');
     }

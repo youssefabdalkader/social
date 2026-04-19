@@ -19,6 +19,8 @@ use function Laravel\Prompts\table;
 
 class PermissionResource extends Resource
 {
+    protected static ?string $navigationGroup = 'Roles & Permissions';
+
     protected static ?string $model = Permission::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -28,8 +30,9 @@ class PermissionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')->required()->unique(ignoreRecord: true),
+
             ]);
-                //
+        //
     }
 
     public static function table(Table $table): Table
@@ -63,11 +66,10 @@ class PermissionResource extends Resource
     {
         return [
             'index' => Pages\ListPermissions::route('/'),
-            'create' => Pages\CreatePermission::route('/create'),
             'edit' => Pages\EditPermission::route('/{record}/edit'),
         ];
     }
-     public static function shouldRegisterNavigation(): bool
+    public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->can('view');
     }

@@ -12,8 +12,7 @@ class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Reset cache
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
 
         // 1. Permissions
         $permissions = ['view', 'create', 'edit', 'delete'];
